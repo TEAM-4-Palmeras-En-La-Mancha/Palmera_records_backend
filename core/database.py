@@ -1,8 +1,6 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import DeclarativeBase, sessionmaker
-
-# URL de conexión a la base de datos (SQLite por defecto para desarrollo local)
-DATABASE_URL = "sqlite:///./palmeras_records.db"
+from core.config import DATABASE_URL
 
 # Motor de conexión. 'check_same_thread: False' es obligatorio para SQLite en FastAPI
 engine = create_engine(
