@@ -121,7 +121,7 @@ def update_album(
 
     try:
         db.commit()
-        db.refresh(Album)
+        db.refresh(album)
 
         return album
 

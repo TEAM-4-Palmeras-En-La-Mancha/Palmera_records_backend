@@ -11,13 +11,6 @@ class AlbumBase(BaseModel):
             examples=["Best Album"]
        )
 
-       artist: str = Field(
-              ...,
-              min_length=2,
-            max_length=100,
-            description="Name of the artist",
-            examples=["Best Singer"]
-        )
        release_year: int = Field(
               ...,
               ge=0,

@@ -37,7 +37,7 @@ db: Session = Depends(get_db)
     return controller.get_by_id(db=db, album_id=album_id)
 @router.post(
     "/",
-    response_model=List[AlbumResponse],
+    response_model=AlbumResponse,
     status_code=status.HTTP_201_CREATED,
     summary="Create a album"
 )
