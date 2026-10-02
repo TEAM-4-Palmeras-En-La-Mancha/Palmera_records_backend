@@ -42,13 +42,8 @@ class AlbumBase(BaseModel):
 
 class AlbumCreate(AlbumBase):
        pass
-class AnimalUpdate(BaseModel):
+class AlbumUpdate(BaseModel):
     title: Optional[str] = Field(
-        None,         
-        min_length=2,
-        max_length=100,
-    )
-    artist: Optional[str] = Field(
         None,         
         min_length=2,
         max_length=100,
