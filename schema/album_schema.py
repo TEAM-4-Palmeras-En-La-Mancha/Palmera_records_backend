@@ -48,11 +48,6 @@ class AlbumUpdate(BaseModel):
         min_length=2,
         max_length=100,
     )
-    artist: Optional[str] = Field(
-        None,         
-        min_length=2,
-        max_length=100,
-    )
 
     release_year:Optional[int]= Field(
         None,
