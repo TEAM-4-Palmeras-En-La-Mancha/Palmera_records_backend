@@ -7,7 +7,6 @@ from model.artist_model import Artist
 from model.album_model import Album
 from schema.artist_schema import ArtistCreate, ArtistUpdate
 
-
 def get_all(db: Session, skip: int = 0, limit: int = 100) -> List[Artist]:
     try:
         return db.query(Artist).offset(skip).limit(limit).all()
