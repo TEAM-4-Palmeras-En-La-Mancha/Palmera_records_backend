@@ -21,7 +21,29 @@ def get_all(db: Session,
             detail=f"Database error in getting albums: {str(error)}"
         )
 
-    
+def get_by_id(
+    db: Session,
+    album_id: int
+) -> Album:
+
+    try:
+        album = db.query(Album).filter(
+            Album.id == album_id
+        ).first()
+
+        if album is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Album not found"
+            )
+
+        return album
+
+    except SQLAlchemyError as error:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Database error in getting album: {str(error)}"
+        )    
 def create_albums(
         db: Session,
         album_data: AlbumCreate
