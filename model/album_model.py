@@ -14,14 +14,14 @@ class Album(Base):
     cover_image_url= Column(String,nullable=True)
     label_id= Column(Integer,ForeignKey("record_labels.id"),nullable=False)
 
-    label = relationship(
+    record_label = relationship(
       "RecordLabel",
-      back_populates="Albums"
+      back_populates="albums"
     )
 
     album_formats= relationship(
         "AlbumFormat",
-        back_populates="Album",
+        back_populates="album",
       cascade="all, delete-orphan"
     )
     artists = relationship(
