@@ -3,7 +3,7 @@ from core.database import Base, engine
 
 from model import branch_model
 from routes.branch_routes import router as branch_router
-
+from routes.album_routes import router as album_router
 # Crear las tablas en la base de datos SQLite
 Base.metadata.create_all(bind=engine)
 
@@ -13,6 +13,7 @@ app = FastAPI(
 )
 
 app.include_router(branch_router)
+app.include_router(album_router)
 
 @app.get("/", tags=["Root"])
 def read_root():

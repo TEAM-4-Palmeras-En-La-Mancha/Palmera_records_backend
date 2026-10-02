@@ -15,11 +15,17 @@ class Album(Base):
     label_id= Column(Integer,ForeignKey("record_labels.id"),nullable=False)
 
     label = relationship(
-      "Labels",
+      "RecordLabel",
       back_populates="Albums"
     )
 
     album_formats= relationship(
         "AlbumFormat",
-        back_populates="Album"
+        back_populates="Album",
+      cascade="all, delete-orphan"
+    )
+    artists = relationship(
+        "Artist",
+        secondary="artist_album",
+        back_populates="albums",
     )

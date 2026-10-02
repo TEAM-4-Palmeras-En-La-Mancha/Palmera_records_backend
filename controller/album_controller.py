@@ -50,8 +50,9 @@ def create_albums(
 ) -> Album:
     
     recordLabel = db.query(RecordLabel).filter(
-        RecordLabel.id== album_data.label_id
-    )
+    RecordLabel.id == album_data.label_id
+    ).first()
+
 
     if recordLabel is None:
          raise HTTPException(
@@ -73,7 +74,7 @@ def create_albums(
         db.refresh(newAlbum)
 
         return newAlbum
-    except:
+    except SQLAlchemyError as error:
         db.rollback()
 
         raise HTTPException(
@@ -122,7 +123,7 @@ def update_album(
         db.commit()
         db.refresh(Album)
 
-        return Album
+        return album
 
     except SQLAlchemyError as error:
         db.rollback()
@@ -135,7 +136,7 @@ def update_album(
 def delete_Album(db: Session, album_id:int)-> None:
     album = db.query(Album).filter(
         Album.id == album_id
-    )
+    ).first()
     if album is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
