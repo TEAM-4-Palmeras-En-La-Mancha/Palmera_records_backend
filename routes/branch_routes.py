@@ -26,10 +26,10 @@ def get_branch(branch_id: int, db: Session = Depends(get_db)):
 
 @router.put("/{branch_id}", response_model=BranchRead)
 def update_branch(branch_id: int, payload: BranchUpdate, db: Session = Depends(get_db)):
-    return controller.update_branch(db, branch_id, payload)
+    return controller.update_branch(db,branch_id,payload )
 
 
 @router.delete("/{branch_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_branch(branch_id: int, db: Session = Depends(get_db)):
-    controller.delete_branch(db, branch_id)
+    controller.delete_branch(db,branch_id)
     return None

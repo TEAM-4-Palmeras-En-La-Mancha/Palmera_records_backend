@@ -3,16 +3,12 @@ from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 from typing import List
 
-from core.database import get_db
+
 from model.branch_model import Branch
 from schema.branch_schema import BranchCreate, BranchUpdate, BranchRead
 
-router = APIRouter(prefix="/branches", tags=["Branches"])
 
-
-# CREATE
-@router.post("/", response_model=BranchRead, status_code=status.HTTP_201_CREATED)
-def create_branch(payload: BranchCreate, db: Session = Depends(get_db)):
+def create_branch(db: Session,payload: BranchCreate):
     branch = Branch(**payload.model_dump())
     try:
         db.add(branch)
@@ -24,24 +20,19 @@ def create_branch(payload: BranchCreate, db: Session = Depends(get_db)):
     return branch
 
 
-# READ ALL
-@router.get("/", response_model=List[BranchRead])
-def get_branches(db: Session = Depends(get_db)):
+
+def get_branches(db: Session ):
     return db.query(Branch).all()
 
 
-# READ ONE
-@router.get("/{branch_id}", response_model=BranchRead)
-def get_branch(branch_id: int, db: Session = Depends(get_db)):
+def get_branch(db: Session,branch_id: int):
     branch = db.get(Branch, branch_id)
     if not branch:
         raise HTTPException(status_code=404, detail="Branch not found")
     return branch
 
 
-# UPDATE
-@router.put("/{branch_id}", response_model=BranchRead)
-def update_branch(branch_id: int, payload: BranchUpdate, db: Session = Depends(get_db)):
+def update_branch(db: Session, branch_id: int, payload: BranchUpdate ):
     branch = db.get(Branch, branch_id)
     if not branch:
         raise HTTPException(status_code=404, detail="Branch not found")
@@ -56,9 +47,7 @@ def update_branch(branch_id: int, payload: BranchUpdate, db: Session = Depends(g
     return branch
 
 
-# DELETE
-@router.delete("/{branch_id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_branch(branch_id: int, db: Session = Depends(get_db)):
+def delete_branch(db: Session, branch_id: int):
     branch = db.get(Branch, branch_id)
     if not branch:
         raise HTTPException(status_code=404, detail="Branch not found")
