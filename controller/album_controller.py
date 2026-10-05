@@ -1,8 +1,10 @@
 from typing import List
 
-from fastapi import HTTPException, status
+from fastapi import HTTPException, status, UploadFile
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
+
+import cloudinary.uploader
 
 from model.album_model import Album
 from model.record_labels_model import RecordLabel
@@ -46,7 +48,8 @@ def get_by_id(
         )    
 def create_albums(
         db: Session,
-        album_data: AlbumCreate
+        album_data: AlbumCreate,
+        cover_image: UploadFile | None = None
 ) -> Album:
     
     recordLabel = db.query(RecordLabel).filter(
@@ -59,12 +62,30 @@ def create_albums(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Label not found"
         )
-
+    
+    image_url =None
+    
+    if cover_image is not None:
+        # result = cloudinary.uploader.upload(
+        #     cover_image.file,
+        #     folder="palmeras_records/albums"
+        # )
+        result = cloudinary.uploader.upload(
+            "cover_image.file",
+            folder="palmeras_records/albums"
+        )
+        image_url = result["secure_url"]
+    # elif url_copiar is not None:
+    #     result = cloudinary.uploader.upload(
+    #             url_copiar,
+    #             folder="palmeras_records/albums"
+    #             )       
+    #     image_url = result["secure_url"]
     newAlbum = Album(
         title = album_data.title,
         release_year = album_data.release_year,
         genre = album_data.genre,
-        cover_image_url= album_data.cover_image_url,
+        cover_image_url= image_url,
         label_id= album_data.label_id
     )
 
@@ -86,7 +107,8 @@ def create_albums(
 def update_album(
             db: Session,
             album_id: int,
-            album_data: AlbumUpdate
+            album_data: AlbumUpdate,
+            cover_image:UploadFile | None = None
 ) -> Album:
     album = db.query(Album).filter(
         Album.id == album_id
@@ -116,8 +138,12 @@ def update_album(
         album.genre = album_data.genre
     if album_data.release_year is not None:
         album.release_year = album_data.release_year
-    if album_data.cover_image_url is not None:
-        album.cover_image_url = album_data.cover_image_url
+    if cover_image is not None:
+        result = cloudinary.uploader.upload(
+            cover_image.file,
+            folder="palmeras_records/albums"
+        )
+        album.cover_image_url = result["secure_url"]
 
     try:
         db.commit()
