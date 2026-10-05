@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, status, Query
 from sqlalchemy.orm import Session
 from typing import List
 
@@ -15,8 +15,12 @@ def create_branch(payload: BranchCreate, db: Session = Depends(get_db)):
 
 
 @router.get("/", response_model=List[BranchRead])
-def get_branches(db: Session = Depends(get_db)):
-    return controller.get_branches(db)
+def get_branches(
+    skip: int = Query(0, ge=0, description="Records to skip"),
+    limit: int = Query(100, ge=1, le=100, description="Max records to return"),
+    db: Session = Depends(get_db)
+):
+    return controller.get_branches(db, skip, limit)
 
 
 @router.get("/{branch_id}", response_model=BranchRead)

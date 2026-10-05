@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, status, Query
 from sqlalchemy.orm import Session
 from typing import List
 
@@ -20,9 +20,11 @@ router = APIRouter(
     description="Retrieve a paginated list of albums."
 )
 def get_albums(
-    db:Session = Depends(get_db)
+    skip: int = Query(0, ge=0, description="Records to skip"),
+    limit: int = Query(100, ge=1, le=100, description="Max records to return"),
+    db: Session = Depends(get_db)
 ):
-    return controller.get_all(db)
+    return controller.get_all(db, skip, limit)
 @router.get(
 "/{album_id}",
     response_model=AlbumResponse,

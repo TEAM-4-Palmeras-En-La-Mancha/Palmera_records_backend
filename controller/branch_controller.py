@@ -21,8 +21,8 @@ def create_branch(db: Session,payload: BranchCreate):
 
 
 
-def get_branches(db: Session ):
-    return db.query(Branch).all()
+def get_branches(db: Session, skip: int = 0, limit: int = 100):
+    return db.query(Branch).offset(skip).limit(limit).all()
 
 
 def get_branch(db: Session,branch_id: int):
