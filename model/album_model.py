@@ -5,27 +5,28 @@ from core.database import Base
 from enums.genres_enum import Genres
 
 class Album(Base):
-    __tablename__ = "albums"
+  __tablename__ = "albums"
 
-    id = Column(Integer, primary_key=True, index=True)
-    title = Column(String, nullable=False)
-    release_year = Column(Integer, nullable=False)
-    genre = Column(Enum(Genres),nullable=False)
-    cover_image_url= Column(String,nullable=True)
-    label_id= Column(Integer,ForeignKey("record_labels.id"),nullable=False)
+  id = Column(Integer, primary_key=True, index=True)
+  title = Column(String, nullable=False)
+  release_year = Column(Integer, nullable=False)
+  genre = Column(Enum(Genres),nullable=False)
+  cover_image_url = Column(String, nullable=True)
+  cover_image_public_id = Column(String, nullable=True)
+  label_id= Column(Integer,ForeignKey("record_labels.id"),nullable=False)
 
-    record_label = relationship(
-      "RecordLabel",
-      back_populates="albums"
-    )
+  record_label = relationship(
+    "RecordLabel",
+    back_populates="albums"
+  )
 
-    album_formats= relationship(
-        "AlbumFormat",
-        back_populates="album",
-      cascade="all, delete-orphan"
-    )
-    artists = relationship(
-        "Artist",
-        secondary="artist_album",
-        back_populates="albums",
-    )
+  album_formats= relationship(
+    "AlbumFormat",
+    back_populates="album",
+    cascade="all, delete-orphan"
+  )
+  artists = relationship(
+    "Artist",
+    secondary="artist_album",
+    back_populates="albums",
+  )

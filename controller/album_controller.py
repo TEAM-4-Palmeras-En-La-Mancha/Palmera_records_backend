@@ -64,7 +64,7 @@ def create_albums(
         )
     
     image_url =None
-    
+    image_id
     if cover_image is not None:
         # result = cloudinary.uploader.upload(
         #     cover_image.file,
@@ -75,6 +75,7 @@ def create_albums(
             folder="palmeras_records/albums"
         )
         image_url = result["secure_url"]
+        image_id = result["public_ids"]
     # elif url_copiar is not None:
     #     result = cloudinary.uploader.upload(
     #             url_copiar,
@@ -86,6 +87,7 @@ def create_albums(
         release_year = album_data.release_year,
         genre = album_data.genre,
         cover_image_url= image_url,
+        cover_image_public_id = image_id,
         label_id= album_data.label_id
     )
 
@@ -139,11 +141,18 @@ def update_album(
     if album_data.release_year is not None:
         album.release_year = album_data.release_year
     if cover_image is not None:
+        if album.cover_image_public_id:
+            cloudinary.uploader.destroy(
+                album.cover_image_public_id
+            )
+
         result = cloudinary.uploader.upload(
             cover_image.file,
             folder="palmeras_records/albums"
         )
+
         album.cover_image_url = result["secure_url"]
+        album.cover_image_public_id = result["public_id"]
 
     try:
         db.commit()
@@ -169,6 +178,11 @@ def delete_Album(db: Session, album_id:int)-> None:
             detail="Album not found"
         )
     try:
+        if album.cover_image_public_id:
+            cloudinary.uploader.destroy(
+                album.cover_image_public_id
+            )
+
         db.delete(album)
         db.commit()
 

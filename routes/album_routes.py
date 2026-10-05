@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, status, UploadFile,Query, File, Form
 from sqlalchemy.orm import Session
 from typing import List
-
+from enums.genres_enum import Genres
 from controller import album_controller as controller
 
 from core.database import get_db
