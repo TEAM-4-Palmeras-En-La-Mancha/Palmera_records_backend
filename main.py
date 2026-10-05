@@ -6,6 +6,7 @@ from routes.format_routes import router as format_router
 from routes.record_labels_routes import router as record_label_router
 from routes.branch_routes import router as branch_router
 from routes.album_routes import router as album_router
+from routes.genre_routes import router as genre_router
 
 app = FastAPI(
     title="Palmeras en la Mancha Records API",
@@ -24,6 +25,7 @@ app.include_router(album_format_router)
 app.include_router(artist_router)
 app.include_router(record_label_router)
 app.include_router(format_router)
+app.include_router(genre_router)
 
 @app.get("/", tags=["Root"])
 def read_root():

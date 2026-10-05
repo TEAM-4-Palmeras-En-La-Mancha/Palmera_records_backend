@@ -1,5 +1,5 @@
 from typing import List
-
+from model.genre_model import Genre
 from fastapi import HTTPException, status, UploadFile
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
@@ -82,15 +82,24 @@ def create_albums(
     #             folder="palmeras_records/albums"
     #             )       
     #     image_url = result["secure_url"]
+    genres = db.query(Genre).filter(
+        Genre.id.in_(album_data.genre_ids)
+    ).all()
+
+    if len(genres) != len(set(album_data.genre_ids)):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Genre not found"
+        )
     newAlbum = Album(
         title = album_data.title,
         release_year = album_data.release_year,
-        genre = album_data.genre,
         cover_image_url= image_url,
         cover_image_public_id = image_id,
         label_id= album_data.label_id
     )
-
+    newAlbum.genres = genres
+    
     try:
         db.add(newAlbum)
         db.commit()
@@ -136,8 +145,18 @@ def update_album(
 
     if album_data.title is not None:
         album.title = album_data.title
-    if album_data.genre is not None:
-        album.genre = album_data.genre
+    if album_data.genre_ids is not None:
+        genres = db.query(Genre).filter(
+            Genre.id.in_(album_data.genre_ids)
+        ).all()
+
+        if len(genres) != len(set(album_data.genre_ids)):
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Genre not found"
+            )
+
+        album.genres = genres
     if album_data.release_year is not None:
         album.release_year = album_data.release_year
     if cover_image is not None:
