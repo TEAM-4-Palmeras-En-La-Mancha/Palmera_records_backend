@@ -69,15 +69,14 @@ def update_artist(db: Session, artist_id: int, artist_data: ArtistUpdate) -> Art
         )
 
 
-def delete_artist(db: Session, artist_id: int) -> dict:
+def delete_artist(db: Session, artist_id: int) -> None:
     artist = get_by_id(db=db, artist_id=artist_id)
     try:
-        # Borrado en cascada manual: elimina los álbumes del artista
         for album in list(artist.albums):
-            db.delete(album)
+            if len(album.artists) == 1:
+                db.delete(album)
         db.delete(artist)
         db.commit()
-        return {"detail": f"Artist with id {artist_id} deleted successfully"}
     except SQLAlchemyError as error:
         db.rollback()
         raise HTTPException(

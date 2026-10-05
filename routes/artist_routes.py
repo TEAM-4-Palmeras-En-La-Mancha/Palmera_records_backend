@@ -8,8 +8,8 @@ import controller.artist_controller as controller
 
 
 router = APIRouter(
-    prefix="/artist",
-    tags=["Artist"]
+    prefix="/artists",
+    tags=["Artists"]
 )
 
 
@@ -70,12 +70,13 @@ def update_existing_artist(
 
 @router.delete(
     "/{artist_id}",
-    status_code=status.HTTP_200_OK,
+    status_code=status.HTTP_204_NO_CONTENT,
     summary="Delete an artist",
-    description="Delete an artist and all its albums"
+    description="Delete an artist, along with any album attributed solely to them."
 )
 def delete_existing_artist(
     artist_id: int,
     db: Session = Depends(get_db)
 ):
-    return controller.delete_artist(db=db, artist_id=artist_id)
+    controller.delete_artist(db=db, artist_id=artist_id)
+    return None
