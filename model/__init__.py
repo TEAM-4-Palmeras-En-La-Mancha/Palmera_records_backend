@@ -4,3 +4,4 @@ from model.format_model import Format
 from model.album_format_model import AlbumFormat
 from model.artist_model import Artist
 from model.branch_model import Branch
+from model.genre_model import Genre
