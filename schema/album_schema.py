@@ -2,7 +2,6 @@ from typing import Optional
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from enums.genres_enum import Genres
 
 
 class AlbumBase(BaseModel):
@@ -19,12 +18,6 @@ class AlbumBase(BaseModel):
         ge=0,
         description="The year of the release",
         examples=[2010]
-    )
-
-    genre: Genres = Field(
-        ...,
-        description="Genre of the album",
-        examples=["jazz"]
     )
 
     label_id: int = Field(
@@ -49,8 +42,6 @@ class AlbumUpdate(BaseModel):
         None,
         ge=0
     )
-
-    genre: Optional[Genres] = None
 
     label_id: Optional[int] = None
 
