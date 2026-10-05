@@ -1,8 +1,8 @@
-from typing import Optional
+from typing import List, Optional
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from enums.genres_enum import Genres
+from schema.genre_schema import GenreResponse
 
 
 class AlbumBase(BaseModel):
@@ -21,12 +21,6 @@ class AlbumBase(BaseModel):
         examples=[2010]
     )
 
-    genre: Genres = Field(
-        ...,
-        description="Genre of the album",
-        examples=["jazz"]
-    )
-
     label_id: int = Field(
         ...,
         description="ID of the label",
@@ -35,7 +29,12 @@ class AlbumBase(BaseModel):
 
 
 class AlbumCreate(AlbumBase):
-    pass
+    genre_ids: List[int] = Field(
+            ...,
+            min_length=1,
+            description="IDs of the genres of the album",
+            examples=[[1, 2]]
+    )
 
 
 class AlbumUpdate(BaseModel):
@@ -50,7 +49,7 @@ class AlbumUpdate(BaseModel):
         ge=0
     )
 
-    genre: Optional[Genres] = None
+    genre_ids: Optional[List[int]]=Field(None, min_length=1)
 
     label_id: Optional[int] = None
 
@@ -61,6 +60,8 @@ class AlbumResponse(AlbumBase):
         description="Primary key of the album",
         examples=[1]
     )
+
+    genres: List[GenreResponse]
 
     cover_image_url: Optional[str] = Field(
         None,
