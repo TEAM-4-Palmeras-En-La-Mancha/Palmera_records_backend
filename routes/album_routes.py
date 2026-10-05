@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, status, Query
+from fastapi import APIRouter, Depends, status, UploadFile,Query, File, Form
 from sqlalchemy.orm import Session
 from typing import List
 
@@ -44,10 +44,26 @@ db: Session = Depends(get_db)
     summary="Create a album"
 )
 def post_album(
-    album_data: AlbumCreate,
+    title: str = Form(...),
+    release_year: int = Form(...),
+    genre: str = Form(...),
+    label_id: int = Form(...),
+    cover_image: UploadFile | None = File(None),
     db: Session = Depends(get_db)
 ):
-    return controller.create_albums(db, album_data)
+    album_data = AlbumCreate(
+        title=title,
+        release_year=release_year,
+        genre=genre,
+        label_id=label_id
+    )
+    return controller.create_albums(
+        db=db,
+        album_data=album_data,
+        cover_image=cover_image
+    )
+
+
 @router.put(
 "/{album_id}",
     response_model=AlbumResponse,
@@ -57,13 +73,24 @@ def post_album(
 )
 def update_album(
     album_id: int,
-    album_data: AlbumUpdate,
+    title: str | None = Form(None),
+    release_year: int | None = Form(None),
+    genre: Genres | None = Form(None),
+    label_id: int | None = Form(None),
+    cover_image: UploadFile | None = File(None),
     db: Session = Depends(get_db)
 ):
+    album_data = AlbumUpdate(
+    title=title,
+    release_year=release_year,
+    genre=genre,
+    label_id=label_id
+    )
     return controller.update_album(
-        db=db,
-        album_id=album_id,
-        album_data=album_data
+    db=db,
+    album_id=album_id,
+    album_data=album_data,
+    cover_image=cover_image
     )
 
 @router.delete(
