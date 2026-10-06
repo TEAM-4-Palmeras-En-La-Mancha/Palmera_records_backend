@@ -1,4 +1,5 @@
 from typing import List
+from model.artist_model import Artist
 from model.genre_model import Genre
 from fastapi import HTTPException, status, UploadFile
 from sqlalchemy.exc import SQLAlchemyError
@@ -93,6 +94,16 @@ def create_albums(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Genre not found"
         )
+
+    artist = db.query(Artist).filter(
+        Artist.id.in_(album_data.artist_ids)
+    ).all()
+
+    if len(artist) != len(set(album_data.artist_ids)):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Artist not found"
+        )
     newAlbum = Album(
         title = album_data.title,
         release_year = album_data.release_year,
@@ -106,6 +117,7 @@ def create_albums(
         newAlbum.artists = artists
 
     newAlbum.genres = genres
+    newAlbum.artists = artist
     
     try:
         db.add(newAlbum)
@@ -164,6 +176,18 @@ def update_album(
             )
 
         album.genres = genres
+    if album_data.artist_ids is not None:
+        artists = db.query(Artist).filter(
+            Artist.id.in_(album_data.artist_ids)
+        ).all()
+
+        if len(artists) != len(set(album_data.artist_ids)):
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Artist not found"
+            )
+
+        album.artists = artists
     if album_data.release_year is not None:
         album.release_year = album_data.release_year
     if cover_image is not None:

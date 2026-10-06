@@ -2,6 +2,7 @@ from typing import List, Optional
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from schema.artist_schema import ArtistResponse
 from schema.genre_schema import GenreResponse
 
 
@@ -48,6 +49,12 @@ class AlbumCreate(AlbumBase):
             description="IDs of the genres of the album",
             examples=[[1,2]]
     )
+    artist_ids: List[int] = Field(
+            ...,
+            min_length=1,
+            description="IDs of the artists of the album",
+            examples=[[1,2]]
+    )
 
 
 class AlbumUpdate(BaseModel):
@@ -64,6 +71,8 @@ class AlbumUpdate(BaseModel):
 
     genre_ids: Optional[List[int]]=Field(None, min_length=1)
 
+    artist_ids: Optional[List[int]]=Field(None, min_length=1)
+
     label_id: Optional[int] = None
 
     artist_ids: Optional[List[int]] = None
@@ -76,12 +85,8 @@ class AlbumResponse(AlbumBase):
         examples=[1]
     )
 
-    artist_ids: List[int] = Field(
-    ...,
-    description="IDs of the artists",
-    examples=[[1, 2]]
-    )
-
+    genres: List[GenreResponse]
+    artists: List[ArtistResponse]
     cover_image_url: Optional[str] = Field(
         None,
         description="URL of the album cover",
