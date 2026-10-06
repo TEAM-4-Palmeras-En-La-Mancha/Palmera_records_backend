@@ -8,6 +8,7 @@ import cloudinary.uploader
 
 from model.album_model import Album
 from model.record_labels_model import RecordLabel
+from model.artist_model import Artist
 from schema.album_schema import AlbumCreate, AlbumUpdate
 
 def get_all(db: Session,
@@ -46,6 +47,7 @@ def get_by_id(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Database error in getting album: {str(error)}"
         )    
+
 def create_albums(
         db: Session,
         album_data: AlbumCreate,
@@ -88,6 +90,10 @@ def create_albums(
         cover_image_url= image_url,
         label_id= album_data.label_id
     )
+
+    if album_data.artist_ids:
+        artists = db.query(Artist).filter(Artist.id.in_(album_data.artist_ids)).all()
+        newAlbum.artists = artists
 
     try:
         db.add(newAlbum)
@@ -144,6 +150,10 @@ def update_album(
             folder="palmeras_records/albums"
         )
         album.cover_image_url = result["secure_url"]
+
+    if album_data.artist_ids is not None:
+        artists = db.query(Artist).filter(Artist.id.in_(album_data.artist_ids)).all()
+        album.artists = artists
 
     try:
         db.commit()
