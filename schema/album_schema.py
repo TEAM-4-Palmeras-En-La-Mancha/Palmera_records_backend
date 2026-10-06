@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, List
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -27,6 +27,12 @@ class AlbumBase(BaseModel):
         examples=["jazz"]
     )
 
+    artist_ids: List[int] = Field(
+    ...,
+    description="IDs of the artists",
+    examples=[[1, 2]]
+    )
+   
     label_id: int = Field(
         ...,
         description="ID of the label",
@@ -54,12 +60,20 @@ class AlbumUpdate(BaseModel):
 
     label_id: Optional[int] = None
 
+    artist_ids: Optional[List[int]] = None
+
 
 class AlbumResponse(AlbumBase):
     id: int = Field(
         ...,
         description="Primary key of the album",
         examples=[1]
+    )
+
+    artist_ids: List[int] = Field(
+    ...,
+    description="IDs of the artists",
+    examples=[[1, 2]]
     )
 
     cover_image_url: Optional[str] = Field(
