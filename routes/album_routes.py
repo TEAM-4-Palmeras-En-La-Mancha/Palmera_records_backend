@@ -45,12 +45,14 @@ db: Session = Depends(get_db)
 def post_album(
     title: str = Form(...),
     release_year: int = Form(...),
-    genre_ids: List[int] = Form(...),
-    artist_ids: List[int] = Form(...),
+    genre_ids: str = Form(...),
+    artist_ids: str = Form(...),
     label_id: int = Form(...),
     cover_image: UploadFile | None = File(None),
     db: Session = Depends(get_db)
 ):
+    genre_ids = [int(x.strip()) for x in genre_ids.split(",") if x.strip()]
+    artist_ids = [int(x.strip()) for x in artist_ids.split(",") if x.strip()]
     album_data = AlbumCreate(
         title=title,
         release_year=release_year,
@@ -66,7 +68,7 @@ def post_album(
 
 
 @router.put(
-"/{album_id}",
+    "/{album_id}",
     response_model=AlbumResponse,
     status_code=status.HTTP_200_OK,
     summary="Update an album",
@@ -76,24 +78,36 @@ def update_album(
     album_id: int,
     title: str | None = Form(None),
     release_year: int | None = Form(None),
-    genre_ids: List[int] | None = Form(None),
-    artist_ids: List[int] | None = Form(None),
+    genre_ids: str | None = Form(None),
+    artist_ids: str | None = Form(None),
     label_id: int | None = Form(None),
     cover_image: UploadFile | None = File(None),
     db: Session = Depends(get_db)
 ):
+    
+    if genre_ids:
+        genre_ids = [int(x) for x in genre_ids.split(",")]
+    else:
+        genre_ids = None
+
+    if artist_ids:
+        artist_ids = [int(x) for x in artist_ids.split(",")]
+    else:
+        artist_ids = None
+
     album_data = AlbumUpdate(
-    title=title,
-    release_year=release_year,
-    genre_ids=genre_ids,
-    artist_ids=artist_ids,
-    label_id=label_id
+        title=title,
+        release_year=release_year,
+        genre_ids=genre_ids,
+        artist_ids=artist_ids,
+        label_id=label_id
     )
+
     return controller.update_album(
-    db=db,
-    album_id=album_id,
-    album_data=album_data,
-    cover_image=cover_image
+        db=db,
+        album_id=album_id,
+        album_data=album_data,
+        cover_image=cover_image
     )
 
 @router.delete(
