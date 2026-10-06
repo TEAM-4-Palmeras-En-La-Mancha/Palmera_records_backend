@@ -247,3 +247,21 @@ def delete_Album(db: Session, album_id:int)-> None:
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Database error in deleting album: {str(error)}"
         )
+
+def get_by_record_label(
+    db: Session,
+    label_id: int
+) -> List[Album]:
+
+    try:
+        return (
+            db.query(Album)
+            .filter(Album.label_id == label_id)
+            .all()
+        )
+
+    except SQLAlchemyError as error:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Database error in fetching albums: {str(error)}"
+        )

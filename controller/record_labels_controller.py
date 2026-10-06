@@ -91,3 +91,22 @@ def delete_record_label(db: Session, label_id: int) -> None:
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Database error in deleting record label: {str(error)}"
         )
+    
+def get_distinct_countries(db: Session) -> List[str]:
+
+    try:
+        countries = (
+            db.query(RecordLabel.country)
+            .distinct()
+            .filter(RecordLabel.country.isnot(None))
+            .order_by(RecordLabel.country)
+            .all()
+        )
+
+        return [country[0] for country in countries]
+
+    except SQLAlchemyError as error:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Database error in fetching countries: {str(error)}"
+        )

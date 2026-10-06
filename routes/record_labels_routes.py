@@ -31,6 +31,17 @@ def read_record_labels(
 ):
     return controller.get_all(db=db, skip=skip, limit=limit)
 
+@router.get(
+    "/countries",
+    response_model=List[str],
+    status_code=status.HTTP_200_OK,
+    summary="List all distinct countries",
+    description="Retrieve a list of all distinct countries from record labels."
+)
+def read_countries(
+    db: Session = Depends(get_db)
+):
+    return controller.get_distinct_countries(db=db)
 
 @router.get(
     "/{label_id}",

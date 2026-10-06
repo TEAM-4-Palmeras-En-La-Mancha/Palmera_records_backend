@@ -24,6 +24,23 @@ def get_albums(
     db: Session = Depends(get_db)
 ):
     return controller.get_all(db, skip, limit)
+
+@router.get(
+    "/label/{label_id}",
+    response_model=List[AlbumResponse],
+    status_code=status.HTTP_200_OK,
+    summary="Get albums by record label",
+    description="Retrieve all albums belonging to a specific record label."
+)
+def read_albums_by_record_label(
+    label_id: int,
+    db: Session = Depends(get_db)
+):
+    return controller.get_by_record_label(
+        db=db,
+        label_id=label_id
+    )
+
 @router.get(
 "/{album_id}",
     response_model=AlbumResponse,
