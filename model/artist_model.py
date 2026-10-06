@@ -26,5 +26,9 @@ class Artist(Base):
         back_populates="artists",
     )
 
+    @property
+    def album_ids(self):
+        return [album.id for album in self.albums]
+
     def __repr__(self) -> str:
         return f"<Artist(id={self.id}, name={self.name})"
