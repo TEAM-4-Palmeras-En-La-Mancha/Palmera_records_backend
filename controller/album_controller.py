@@ -1,5 +1,5 @@
 from typing import List
-
+from model.genre_model import Genre
 from fastapi import HTTPException, status, UploadFile
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
@@ -66,28 +66,38 @@ def create_albums(
         )
     
     image_url =None
-    
+    image_id = None
     if cover_image is not None:
         # result = cloudinary.uploader.upload(
         #     cover_image.file,
         #     folder="palmeras_records/albums"
         # )
         result = cloudinary.uploader.upload(
-            "cover_image.file",
+            cover_image.file,
             folder="palmeras_records/albums"
         )
         image_url = result["secure_url"]
+        image_id = result["public_id"]
     # elif url_copiar is not None:
     #     result = cloudinary.uploader.upload(
     #             url_copiar,
     #             folder="palmeras_records/albums"
     #             )       
     #     image_url = result["secure_url"]
+    genres = db.query(Genre).filter(
+        Genre.id.in_(album_data.genre_ids)
+    ).all()
+
+    if len(genres) != len(set(album_data.genre_ids)):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Genre not found"
+        )
     newAlbum = Album(
         title = album_data.title,
         release_year = album_data.release_year,
-        genre = album_data.genre,
         cover_image_url= image_url,
+        cover_image_public_id = image_id,
         label_id= album_data.label_id
     )
 
@@ -95,6 +105,8 @@ def create_albums(
         artists = db.query(Artist).filter(Artist.id.in_(album_data.artist_ids)).all()
         newAlbum.artists = artists
 
+    newAlbum.genres = genres
+    
     try:
         db.add(newAlbum)
         db.commit()
@@ -140,16 +152,33 @@ def update_album(
 
     if album_data.title is not None:
         album.title = album_data.title
-    if album_data.genre is not None:
-        album.genre = album_data.genre
+    if album_data.genre_ids is not None:
+        genres = db.query(Genre).filter(
+            Genre.id.in_(album_data.genre_ids)
+        ).all()
+
+        if len(genres) != len(set(album_data.genre_ids)):
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Genre not found"
+            )
+
+        album.genres = genres
     if album_data.release_year is not None:
         album.release_year = album_data.release_year
     if cover_image is not None:
+        if album.cover_image_public_id:
+            cloudinary.uploader.destroy(
+                album.cover_image_public_id
+            )
+
         result = cloudinary.uploader.upload(
             cover_image.file,
             folder="palmeras_records/albums"
         )
+
         album.cover_image_url = result["secure_url"]
+        album.cover_image_public_id = result["public_id"]
 
     if album_data.artist_ids is not None:
         artists = db.query(Artist).filter(Artist.id.in_(album_data.artist_ids)).all()
@@ -179,6 +208,11 @@ def delete_Album(db: Session, album_id:int)-> None:
             detail="Album not found"
         )
     try:
+        if album.cover_image_public_id:
+            cloudinary.uploader.destroy(
+                album.cover_image_public_id
+            )
+
         db.delete(album)
         db.commit()
 

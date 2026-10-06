@@ -1,7 +1,6 @@
 from fastapi import APIRouter, Depends, status, UploadFile,Query, File, Form
 from sqlalchemy.orm import Session
 from typing import List
-
 from controller import album_controller as controller
 
 from core.database import get_db
@@ -46,7 +45,7 @@ db: Session = Depends(get_db)
 def post_album(
     title: str = Form(...),
     release_year: int = Form(...),
-    genre: str = Form(...),
+    genre_ids: List[int] = Form(...),
     label_id: int = Form(...),
     cover_image: UploadFile | None = File(None),
     db: Session = Depends(get_db)
@@ -54,7 +53,7 @@ def post_album(
     album_data = AlbumCreate(
         title=title,
         release_year=release_year,
-        genre=genre,
+        genre_ids=genre_ids,
         label_id=label_id
     )
     return controller.create_albums(
@@ -75,7 +74,7 @@ def update_album(
     album_id: int,
     title: str | None = Form(None),
     release_year: int | None = Form(None),
-    genre: Genres | None = Form(None),
+    genre_ids: List[int] | None = Form(None),
     label_id: int | None = Form(None),
     cover_image: UploadFile | None = File(None),
     db: Session = Depends(get_db)
@@ -83,7 +82,7 @@ def update_album(
     album_data = AlbumUpdate(
     title=title,
     release_year=release_year,
-    genre=genre,
+    genre_ids=genre_ids,
     label_id=label_id
     )
     return controller.update_album(
