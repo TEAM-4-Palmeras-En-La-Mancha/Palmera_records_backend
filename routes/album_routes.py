@@ -4,7 +4,7 @@ from typing import List
 from controller import album_controller as controller
 
 from core.database import get_db
-from schema.album_schema import AlbumCreate,AlbumUpdate,AlbumResponse
+from schema.album_schema import AlbumCreate,AlbumUpdate,AlbumResponse, AlbumSummary
 
 router = APIRouter(
     prefix= "/albums",
@@ -13,7 +13,7 @@ router = APIRouter(
 
 @router.get(
     "/",
-        response_model=List[AlbumResponse],
+        response_model=List[AlbumSummary],
     status_code=status.HTTP_200_OK,
     summary="List all albums",
     description="Retrieve a paginated list of albums."

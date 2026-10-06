@@ -22,19 +22,6 @@ class AlbumBase(BaseModel):
         examples=[2010]
     )
 
-    genre_ids: List[int] = Field(
-            ...,
-            min_length=1,
-            description="IDs of the genres of the album",
-            examples=[[1, 2]]
-    )
-
-    artist_ids: List[int] = Field(
-    ...,
-    description="IDs of the artists",
-    examples=[[1, 2]]
-    )
-   
     label_id: int = Field(
         ...,
         description="ID of the label",
@@ -75,7 +62,6 @@ class AlbumUpdate(BaseModel):
 
     label_id: Optional[int] = None
 
-    artist_ids: Optional[List[int]] = None
 
 
 class AlbumResponse(AlbumBase):
@@ -90,6 +76,39 @@ class AlbumResponse(AlbumBase):
     cover_image_url: Optional[str] = Field(
         None,
         description="URL of the album cover",
+        examples=["https://example.com/cover.jpg"]
+    )
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class AlbumSummary(BaseModel):
+    """
+    Lightweight projection of an album without the genre and artist
+    relations, used by the album list endpoint to avoid N+1 queries.
+    """
+    id: int = Field(
+        ...,
+        description="Primary key of the album",
+        examples=[1]
+    )
+    title: str = Field(
+        ...,
+        min_length=2,
+        max_length=100,
+        examples=["Kind of Blue"]
+    )
+    release_year: int = Field(
+        ...,
+        ge=0,
+        examples=[1959]
+    )
+    label_id: int = Field(
+        ...,
+        examples=[1]
+    )
+    cover_image_url: Optional[str] = Field(
+        None,
         examples=["https://example.com/cover.jpg"]
     )
 
