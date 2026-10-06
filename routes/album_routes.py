@@ -46,6 +46,7 @@ def post_album(
     title: str = Form(...),
     release_year: int = Form(...),
     genre_ids: List[int] = Form(...),
+    artist_ids: List[int] = Form(...),
     label_id: int = Form(...),
     cover_image: UploadFile | None = File(None),
     db: Session = Depends(get_db)
@@ -54,6 +55,7 @@ def post_album(
         title=title,
         release_year=release_year,
         genre_ids=genre_ids,
+        artist_ids=artist_ids,
         label_id=label_id
     )
     return controller.create_albums(
@@ -75,6 +77,7 @@ def update_album(
     title: str | None = Form(None),
     release_year: int | None = Form(None),
     genre_ids: List[int] | None = Form(None),
+    artist_ids: List[int] | None = Form(None),
     label_id: int | None = Form(None),
     cover_image: UploadFile | None = File(None),
     db: Session = Depends(get_db)
@@ -83,6 +86,7 @@ def update_album(
     title=title,
     release_year=release_year,
     genre_ids=genre_ids,
+    artist_ids=artist_ids,
     label_id=label_id
     )
     return controller.update_album(

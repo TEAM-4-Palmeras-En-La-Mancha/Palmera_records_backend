@@ -46,7 +46,7 @@ class AlbumCreate(AlbumBase):
             ...,
             min_length=1,
             description="IDs of the genres of the album",
-            examples=[[1, 2]]
+            examples=[[1,2]]
     )
 
 
