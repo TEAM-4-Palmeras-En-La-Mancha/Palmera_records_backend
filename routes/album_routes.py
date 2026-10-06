@@ -27,7 +27,7 @@ def get_albums(
 
 @router.get(
     "/label/{label_id}",
-    response_model=List[AlbumResponse],
+    response_model=List[AlbumSummary],
     status_code=status.HTTP_200_OK,
     summary="Get albums by record label",
     description="Retrieve all albums belonging to a specific record label."
