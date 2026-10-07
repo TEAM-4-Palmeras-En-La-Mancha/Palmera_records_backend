@@ -1,3 +1,5 @@
+import sys
+import traceback
 from contextlib import asynccontextmanager
 from pathlib import Path
 from alembic import command
@@ -11,12 +13,19 @@ from routes.record_labels_routes import router as record_label_router
 from routes.branch_routes import router as branch_router
 from routes.album_routes import router as album_router
 from routes.genre_routes import router as genre_router
+from seed import seed_if_empty
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    alembic_cfg = Config(str(Path(__file__).parent / "alembic.ini"))
-    command.upgrade(alembic_cfg, "head")
+    try:
+        alembic_cfg = Config(str(Path(__file__).parent / "alembic.ini"))
+        command.upgrade(alembic_cfg, "head")
+        if seed_if_empty():
+            print("seed: base de datos de demo poblada", file=sys.stderr)
+    except BaseException:
+        traceback.print_exc()
+        raise
     yield
 
 
