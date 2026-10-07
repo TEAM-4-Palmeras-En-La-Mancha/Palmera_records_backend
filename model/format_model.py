@@ -11,7 +11,6 @@ class Format(Base):
     name = Column(String(50), nullable=False, unique=True, index=True)
     description = Column(String(255), nullable=True)
 
-    # Relación N:M con Album a través de la tabla intermedia album_formats
     album_formats = relationship(
         "AlbumFormat",
         back_populates="format",
