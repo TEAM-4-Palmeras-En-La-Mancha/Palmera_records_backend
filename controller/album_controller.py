@@ -69,22 +69,14 @@ def create_albums(
     image_url =None
     image_id = None
     if cover_image is not None:
-        # result = cloudinary.uploader.upload(
-        #     cover_image.file,
-        #     folder="palmeras_records/albums"
-        # )
+        
         result = cloudinary.uploader.upload(
             cover_image.file,
             folder="palmeras_records/albums"
         )
         image_url = result["secure_url"]
         image_id = result["public_id"]
-    # elif url_copiar is not None:
-    #     result = cloudinary.uploader.upload(
-    #             url_copiar,
-    #             folder="palmeras_records/albums"
-    #             )       
-    #     image_url = result["secure_url"]
+
     genres = db.query(Genre).filter(
         Genre.id.in_(album_data.genre_ids)
     ).all()

@@ -12,7 +12,6 @@ class RecordLabel(Base):
     country = Column(String(100), nullable=False)
     website = Column(String(255), nullable=True)
 
-    # Relación 1:N con Album
     albums = relationship("Album", back_populates="record_label", cascade="all, delete-orphan")
 
     def __repr__(self) -> str:
