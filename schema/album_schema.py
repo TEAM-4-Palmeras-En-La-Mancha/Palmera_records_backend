@@ -81,35 +81,3 @@ class AlbumResponse(AlbumBase):
 
     model_config = ConfigDict(from_attributes=True)
 
-
-class AlbumSummary(BaseModel):
-    """
-    Lightweight projection of an album without the genre and artist
-    relations, used by the album list endpoint to avoid N+1 queries.
-    """
-    id: int = Field(
-        ...,
-        description="Primary key of the album",
-        examples=[1]
-    )
-    title: str = Field(
-        ...,
-        min_length=2,
-        max_length=100,
-        examples=["Kind of Blue"]
-    )
-    release_year: int = Field(
-        ...,
-        ge=0,
-        examples=[1959]
-    )
-    label_id: int = Field(
-        ...,
-        examples=[1]
-    )
-    cover_image_url: Optional[str] = Field(
-        None,
-        examples=["https://example.com/cover.jpg"]
-    )
-
-    model_config = ConfigDict(from_attributes=True)
