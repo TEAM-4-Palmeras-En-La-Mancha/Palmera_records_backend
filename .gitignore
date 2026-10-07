@@ -14,7 +14,7 @@ ENV/
 # Database
 *.sqlite3
 *.db
-
+*.sh
 # Environment variables
 .env
 

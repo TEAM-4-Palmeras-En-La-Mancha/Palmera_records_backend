@@ -1,3 +1,7 @@
+from contextlib import asynccontextmanager
+from pathlib import Path
+from alembic import command
+from alembic.config import Config
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from routes.artist_routes import router as artist_router
@@ -8,9 +12,18 @@ from routes.branch_routes import router as branch_router
 from routes.album_routes import router as album_router
 from routes.genre_routes import router as genre_router
 
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    alembic_cfg = Config(str(Path(__file__).parent / "alembic.ini"))
+    command.upgrade(alembic_cfg, "head")
+    yield
+
+
 app = FastAPI(
     title="Palmeras en la Mancha Records API",
-    version="1.0.0"
+    version="1.0.0",
+    lifespan=lifespan,
 )
 app.add_middleware(
     CORSMiddleware,
@@ -26,6 +39,7 @@ app.include_router(artist_router)
 app.include_router(record_label_router)
 app.include_router(format_router)
 app.include_router(genre_router)
+
 
 @app.get("/", tags=["Root"])
 def read_root():
