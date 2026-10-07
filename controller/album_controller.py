@@ -4,13 +4,11 @@ from model.genre_model import Genre
 from fastapi import HTTPException, status, UploadFile
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
-
-import cloudinary.uploader
-
 from model.album_model import Album
 from model.record_labels_model import RecordLabel
 from model.artist_model import Artist
 from schema.album_schema import AlbumCreate, AlbumUpdate
+from service import cloudinary_service
 
 def get_all(db: Session,
             skip: int =0,
@@ -73,7 +71,7 @@ def create_albums(
         #     cover_image.file,
         #     folder="palmeras_records/albums"
         # )
-        result = cloudinary.uploader.upload(
+        result = cloudinary_service.upload_image(
             cover_image.file,
             folder="palmeras_records/albums"
         )
@@ -192,11 +190,11 @@ def update_album(
         album.release_year = album_data.release_year
     if cover_image is not None:
         if album.cover_image_public_id:
-            cloudinary.uploader.destroy(
+            cloudinary_service.delete_image(
                 album.cover_image_public_id
             )
 
-        result = cloudinary.uploader.upload(
+        result = cloudinary_service.upload_image(
             cover_image.file,
             folder="palmeras_records/albums"
         )
@@ -233,7 +231,7 @@ def delete_Album(db: Session, album_id:int)-> None:
         )
     try:
         if album.cover_image_public_id:
-            cloudinary.uploader.destroy(
+            cloudinary_service.delete_image(
                 album.cover_image_public_id
             )
 
