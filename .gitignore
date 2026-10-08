@@ -14,7 +14,7 @@ ENV/
 # Database
 *.sqlite3
 *.db
-
+*.sh
 # Environment variables
 .env
 
@@ -25,4 +25,4 @@ ENV/
 *.swo
 .DS_Store
 
-node_modules/
+node_modules/.pytest_cache/
